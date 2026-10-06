@@ -8,7 +8,42 @@
 
 Academic project by **Miguel Pajuelo Gómez and Jorge Ois de Pascual** for *Matemática Discreta*, ICAI, Universidad Pontificia Comillas. The main project is a Madrid route planner; two independent companion practices explore modular arithmetic, IMatLab and educational RSA.
 
-[Route preview](#route-preview) · [Architecture](#how-the-route-planner-works) · [Run the GPS](#run-the-gps) · [Companion practices](#companion-practices) · [Validation](#validation-and-known-limits)
+[Usage example](#a-complete-usage-example) · [Route preview](#route-preview) · [Architecture](#how-the-route-planner-works) · [Run the GPS](#run-the-gps) · [Companion practices](#companion-practices) · [Validation](#validation-and-known-limits)
+
+## A complete usage example
+
+The practical goal is to help a user **select two addresses, choose a route criterion and read the resulting journey**.
+
+This example ran the actual `gps.main()` application with local data. It selected **Calle de Alberto Aguilera, 23** as the origin and **Avenida de la Gran Via De Hortaleza, 1** as the destination, confirmed the address matches and chose the distance objective.
+
+### Input and instructions
+
+Excerpt from the actual terminal session (the application interface is in Spanish):
+
+```text
+Origen: Calle de Alberto Aguilera, 23
+Has seleccionado: Calle de Alberto Aguilera, 23
+Destino: Avenida de la Gran Via De Hortaleza, 1
+Has seleccionado: Avenida de la Gran Via De Hortaleza, 1
+Elige opción [1-3]: 1
+Ruta mas rapida (metros) calculada. Nodos en el camino: 84
+ 1. Sigue 961 m por Calle de Blasco de Garay.
+ 2. Gira a la derecha hacia Calle de Cea Bermúdez.
+ 3. Sigue 585 m por Calle de Cea Bermúdez.
+ 4. Sigue recto y entra en Calle de José Abascal.
+ 5. Sigue 544 m por Calle de José Abascal.
+ 6. Gira a la izquierda hacia Calle de Alonso Cano.
+```
+
+[Full terminal session](.codex/visuals/usage_gps_session.txt), including candidate matches, all instructions and normal application exit.
+
+### The application's route display
+
+![Actual route figure produced by the GPS application for the example addresses](.codex/visuals/usage_gps_route.png)
+
+The blue nodes and grey edges are the included Madrid street graph; the red path is the application's selected route. The real plotting function generated this figure, with `plt.show()` replaced only by an image export so the example could run without opening a window. This checks the recorded application path, not every address or route, and does not certify the interactive GUI.
+
+The address candidates require user confirmation. A query can match a different street when the requested address is absent from the included table; inspect the candidates rather than assuming the first result is the intended destination.
 
 ## Route preview
 

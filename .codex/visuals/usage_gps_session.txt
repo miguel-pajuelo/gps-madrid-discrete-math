@@ -1,0 +1,78 @@
+=== Navegador Madrid (Práctica Discreta) ===
+Cargando callejero de direcciones...
+Cargando grafo de calles.
+Cargando grafo desde fichero
+
+Introduce origen y destino (Enter vacío para terminar).
+Origen: Calle de Alberto Aguilera, 23
+
+Coincidencias encontradas:
+  1) Calle de Alberto Aguilera, 23  (100%)
+  2) Calle de Alberto Aguilera, 2  (98%)
+  3) Calle de Alberto Aguilera, 3  (98%)
+  4) Calle de Alberto Aguilera, 12  (97%)
+  5) Calle de Alberto Aguilera, 13  (97%)
+Selecciona el número de la dirección (0 para volver a escribir, Enter vacío para cancelar): 1
+Has seleccionado: Calle de Alberto Aguilera, 23
+Destino: Avenida de la Gran Via De Hortaleza, 1
+
+Coincidencias encontradas:
+  1) Avenida de la Gran Via De Hortaleza, 1  (100%)
+  2) Avenida de la Gran Via De Hortaleza, 15  (99%)
+  3) Avenida de la Gran Via De Hortaleza, 17  (99%)
+  4) Avenida de la Gran Via De Hortaleza, 19  (99%)
+  5) Avenida de la Gran Via De Hortaleza, 21  (99%)
+Selecciona el número de la dirección (0 para volver a escribir, Enter vacío para cancelar): 1
+Has seleccionado: Avenida de la Gran Via De Hortaleza, 1
+
+Modo de cálculo de ruta:
+  1) Ruta más corta (distancia en metros)
+  2) Ruta más rápida (tiempo sin semáforos)
+  3) Ruta más rápida (tiempo esperado con semáforos)
+Elige opción [1-3]: 1
+Ruta mas rapida (metros) calculada. Nodos en el camino: 84
+ 1. Sigue 961 m por Calle de Blasco de Garay.
+ 2. Gira a la derecha hacia Calle de Cea Bermúdez.
+ 3. Sigue 585 m por Calle de Cea Bermúdez.
+ 4. Sigue recto y entra en Calle de José Abascal.
+ 5. Sigue 544 m por Calle de José Abascal.
+ 6. Gira a la izquierda hacia Calle de Alonso Cano.
+ 7. Sigue 903 m por Calle de Alonso Cano.
+ 8. Gira a la derecha hacia Calle de Raimundo Fernández Villaverde.
+ 9. Sigue 535 m por Calle de Raimundo Fernández Villaverde.
+ 10. Gira a la izquierda hacia Paseo de la Castellana.
+ 11. Sigue 136 m por Paseo de la Castellana.
+ 12. Sigue recto y entra en Paseo de La Habana.
+ 13. Sigue 596 m por Paseo de La Habana.
+ 14. Sigue recto y entra en Glorieta de los Sagrados Corazones.
+ 15. Sigue 125 m por Glorieta de los Sagrados Corazones.
+ 16. Gira a la derecha hacia Paseo de La Habana.
+ 17. Sigue 581 m por Paseo de La Habana.
+ 18. Sigue recto y entra en Calle de Potosí.
+ 19. Sigue 294 m por Calle de Potosí.
+ 20. Sigue recto y entra en Calle de Colombia.
+ 21. Sigue 87 m por Calle de Colombia.
+ 22. Gira a la izquierda hacia Calle del Príncipe de Vergara.
+ 23. Sigue 140 m por Calle del Príncipe de Vergara.
+ 24. Gira a la izquierda hacia Plaza de la República Dominicana.
+ 25. Sigue 31 m por Plaza de la República Dominicana.
+ 26. Gira a la derecha hacia Calle de Costa Rica.
+ 27. Sigue 923 m por Calle de Costa Rica.
+ 28. Sigue recto y entra en ['Puente de Costa Rica', 'Calle de Costa Rica'].
+ 29. Sigue 79 m por ['Puente de Costa Rica', 'Calle de Costa Rica'].
+ 30. Sigue recto y entra en Puente de Costa Rica.
+ 31. Sigue 76 m por Puente de Costa Rica.
+ 32. Sigue recto y entra en (vía sin nombre).
+ 33. Sigue 180 m por (vía sin nombre).
+ 34. Sigue recto y entra en Calle de Arturo Soria.
+ 35. Sigue 31 m por Calle de Arturo Soria.
+ 36. Gira a la izquierda hacia Calle Emilio Rubín.
+ 37. Sigue 213 m por Calle Emilio Rubín.
+ 38. Gira a la izquierda hacia Calle Montearagón.
+ 39. Sigue 204 m por Calle Montearagón.
+ 40. Gira a la izquierda hacia Calle de Montearagón.
+ 41. 112 m por Calle de Montearagón hasta tu destino.
+
+Introduce origen y destino (Enter vacío para terminar).
+Origen:
+Fin de la aplicación.
