@@ -1,66 +1,129 @@
-# GPS de Madrid y aplicaciones de Matemática Discreta
+# Madrid Route Planner with Graph Algorithms
 
-Proyecto académico de **Miguel Pajuelo Gómez y Jorge Ois de Pascual**, ICAI, Universidad Pontificia Comillas.
+![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)
+![NetworkX](https://img.shields.io/badge/Graphs-NetworkX-2563eb)
+![OpenStreetMap](https://img.shields.io/badge/Map-OpenStreetMap-7EBC6F?logo=openstreetmap&logoColor=white)
 
-El proyecto principal es un navegador de Madrid que convierte direcciones en nodos de un grafo y calcula rutas mediante Dijkstra. Se acompañan dos prácticas independientes: una biblioteca de aritmética modular con interfaz IMatLab y aplicaciones didácticas de RSA.
+**Turn a Madrid address into a graph node, compute a route with Dijkstra and explain the journey with turn instructions and a map.**
 
-## Cómo recorrer este repositorio
+Academic project by **Miguel Pajuelo Gómez and Jorge Ois de Pascual** for *Matemática Discreta*, ICAI, Universidad Pontificia Comillas. The main project is a Madrid route planner; two independent companion practices explore modular arithmetic, IMatLab and educational RSA.
 
-| Bloque | Contenido | Relación con el GPS |
-|---|---|---|
-| [gps/](gps/) | Callejero, grafo de Madrid, Dijkstra, rutas e instrucciones. | Proyecto final de la asignatura. |
-| [01_modular_imatlab/](complementarios/01_modular_imatlab/) | Biblioteca modular, consola IMatLab, benchmark, ejemplos y pruebas. | Práctica complementaria; el GPS no la importa. |
-| [02_rsa/](complementarios/02_rsa/) | RSA, padding, cifrado de cadenas, registro de usuarios y chat. | Práctica complementaria; utiliza su propia `modular.py`. |
-| [documentacion/](documentacion/) | [Memoria del GPS](documentacion/memoria_gps.docx) y [memoria de la práctica 1](documentacion/memoria_modular_imatlab.pdf). | Documentos originales seleccionados. |
+[Route preview](#route-preview) · [Architecture](#how-the-route-planner-works) · [Run the GPS](#run-the-gps) · [Companion practices](#companion-practices) · [Validation](#validation-and-known-limits)
 
-IMatLab es una interfaz escrita en Python; no requiere MATLAB de MathWorks. Las prácticas 1 y 2 aportan otros contenidos de la asignatura, pero no son dependencias de ejecución de la práctica 3. Mantenerlas separadas evita mezclar sus bibliotecas `modular.py`, que son versiones diferentes. Consultar [PROCEDENCIA.md](PROCEDENCIA.md).
+## Route preview
 
-## Ejecutar el GPS
+![Three routes on the stored Madrid street graph: shortest distance, estimated driving time and time with an expected junction penalty](.codex/visuals/madrid_routes.png)
 
-Se conserva el entorno de requisitos del proyecto, con Python 3.12 como versión usada en la comprobación local. Crear y activar un entorno nuevo:
+*Generated from the included street graph using this project's `camino_minimo` implementation. Endpoints are road nodes nearest to approximate coordinates for Puerta del Sol and Santiago Bernabéu. All three route costs were checked against NetworkX. Time estimates use a static academic model, not live traffic or measured journey times.*
 
-```sh
-python -m venv .venv
-# Windows: .venv\Scripts\Activate.ps1
-# Linux:   . .venv/bin/activate
-python -m pip install -r requirements.txt
-python gps/gps.py
+[Route nodes, objective costs and generation details](.codex/visuals/madrid_routes.json). Map data: [© OpenStreetMap contributors](https://www.openstreetmap.org/copyright), [ODbL](https://opendatacommons.org/licenses/odbl/1-0/).
+
+## What the project demonstrates
+
+- **Algorithm implementation:** Dijkstra with a priority queue, path reconstruction, Prim and Kruskal in the weighted-graph module.
+- **Geospatial processing:** loading street addresses, matching user input and mapping coordinates onto a local road graph.
+- **Multi-objective route selection:** minimising distance, estimated driving time or time with an expected junction penalty.
+- **Application logic:** interactive address selection, route instructions and Matplotlib visualisation.
+- **Mathematical foundations:** separate coursework on modular operations, RSA and the limitations of educational cryptography.
+
+## How the route planner works
+
+```mermaid
+flowchart LR
+    INPUT["Origin + destination text"] --> MATCH["Fuzzy address matching"]
+    CSV["Local address CSV"] --> MATCH
+    MATCH --> COORD["Selected coordinates"]
+    COORD --> NODES["Nearest road nodes"]
+    MAP["Local OpenStreetMap GraphML"] --> GRAPH["Directed weighted graph"]
+    GRAPH --> NODES
+    NODES --> DIJKSTRA["Dijkstra + path reconstruction"]
+    OBJECTIVE["Distance / time / time + penalty"] --> DIJKSTRA
+    DIJKSTRA --> OUTPUT["Turn instructions + route map"]
+    classDef algorithm fill:#dbeafe,stroke:#2563eb,color:#0f172a;
+    classDef data fill:#dcfce7,stroke:#16a34a,color:#0f172a;
+    class MATCH,NODES,GRAPH,DIJKSTRA algorithm;
+    class CSV,MAP,OUTPUT data;
 ```
 
-El programa solicita origen y destino, ofrece coincidencias de direcciones y permite elegir ruta por distancia, tiempo o tiempo con penalización estimada de semáforos. Después genera instrucciones y dibuja el recorrido.
+The included dataset contains **213,811 address records**; the stored road graph has **31,388 nodes and 61,742 edges**, as recorded in [VALIDACION.md](VALIDACION.md). These are dataset sizes, not performance claims. The normal load uses local files, so it does not need to download Madrid again.
 
-La copia incluye `gps/direcciones.csv` y `gps/madrid.graphml`; con ese grafo, la carga normal no necesita descargar de nuevo Madrid. El tiempo de recorrido procede de longitudes y velocidades de vía. La penalización de semáforos añade un valor esperado de 24 segundos por arista: es un modelo didáctico, no tráfico observado ni navegación en tiempo real.
+### Route objectives
 
-`grafo_pesado.py` incluye Dijkstra, reconstrucción del camino, Prim y Kruskal. Sus algoritmos deben usarse con las condiciones del ejercicio, por ejemplo pesos no negativos para Dijkstra. El grafo vial procede de OpenStreetMap; véase [gps/DATOS.md](gps/DATOS.md).
+| Objective | Edge cost | Meaning |
+|---|---|---|
+| Distance | Road segment length in metres. | Shortest total road distance. |
+| Time | Length divided by a speed limit or road-type fallback. | Estimated driving time using fixed speeds. |
+| Time + junction penalty | Time cost + **24 seconds per edge**. | Coursework model: 0.8 probability × 30 seconds stopped. |
 
-## Ejecutar IMatLab
+The junction model does not identify real traffic lights. Different objectives can select different routes; their optimisation costs use different units and should not be compared as a single score.
 
-La práctica 1 usa la biblioteca estándar de Python. Desde `complementarios/01_modular_imatlab`:
+## Repository guide
+
+| Block | Contents |
+|---|---|
+| [gps/](gps/) | Main route planner, addresses, street graph and exploration notebooks. |
+| [gps/callejero.py](gps/callejero.py) | CSV loading, coordinate conversion, fuzzy matching and graph preparation. |
+| [gps/grafo_pesado.py](gps/grafo_pesado.py) | Dijkstra, path reconstruction, Prim and Kruskal. |
+| [gps/gps.py](gps/gps.py) | Route objectives, user interaction, instructions and map display. |
+| [Modular arithmetic / IMatLab](complementarios/01_modular_imatlab/) | Independent first practice, examples, benchmarks and tests. |
+| [RSA](complementarios/02_rsa/) | Independent second practice: educational cryptography and terminal applications. |
+| [Documentation](documentacion/) | [GPS report](documentacion/memoria_gps.docx) and [IMatLab report](documentacion/memoria_modular_imatlab.pdf). |
+
+The companion practices are **not dependencies of the GPS**. Each contains its own modular-arithmetic version. IMatLab is written in Python and does not require MathWorks MATLAB.
+
+## Run the GPS
+
+Python **3.12** was used for the local preparation checks. From the repository root in PowerShell:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe gps/gps.py
+```
+
+On Linux/macOS, use `.venv/bin/python` for installation and execution.
+
+1. Enter an origin and select the appropriate address match.
+2. Enter a destination and confirm its address match.
+3. Choose distance, time or time with the expected junction penalty.
+4. Read the instructions and inspect the route window.
+
+The static GraphML and CSV are included. See [gps/DATOS.md](gps/DATOS.md) for formats, attribution and data provenance limits. Street layout/speed values are historical; this application is an academic prototype, not a live navigation service.
+
+## Companion practices
+
+### Modular arithmetic and IMatLab
+
+From `complementarios/01_modular_imatlab`, using Python:
 
 ```sh
 python imatlab.py
 python imatlab.py ejemplosComandos.txt salida_local.txt
 ```
 
-Ejemplos de comandos: `primo(7)`, `factorizar(8)`, `mcd(12,18)` e `inv(3,7)`. El benchmark y el notebook conservan el contexto de los ejercicios.
+Example commands include `primo(7)`, `factorizar(8)`, `mcd(12,18)` and `inv(3,7)`. The practice uses the standard library and includes its original benchmarks, notebook and test suite. `bezout_n`, `raiz_mod_p` and `ecuacion_cuadratica` are incomplete; some expected example outputs therefore cannot be reproduced. [Practice guide](complementarios/01_modular_imatlab/README.md).
 
-El material original tiene funciones incompletas: `bezout_n`, `raiz_mod_p` y `ecuacion_cuadratica`. Las pruebas de la versión seleccionada dan **74 correctas y 11 fallidas**. Por ello se presenta como práctica académica con límites conocidos, no como biblioteca modular completa. Las funciones no se han reescrito durante el empaquetado. `ejemplosSalida.txt` contiene las salidas esperadas del ejercicio; algunas, como raíces y ecuaciones cuadráticas, no se reproducen con las funciones incompletas.
+### Educational RSA
 
-## Ejecutar RSA y las aplicaciones didácticas
-
-Desde `complementarios/02_rsa`, ejecutar `python registrarusuario.py` para crear usuarios de prueba y después `python criptochat.py usuario1 usuario2` para cifrar o descifrar texto mediante los archivos de claves de esos usuarios. El chat es una interfaz de cifrado/descifrado en terminal, no un servicio de mensajería en red.
-
-Las claves y mensajes de los usuarios originales no se incluyen. `X.txt` conserva el texto cifrado del ejercicio y su clave pública para ejecutar el ataque didáctico con `python prueba.py`; el resultado se genera localmente como `X_descifrado.txt`, excluido de Git. Las **58 pruebas existentes de RSA pasan**. Este resultado verifica los casos de la práctica; el padding decimal y el uso de `random` no acreditan seguridad criptográfica de producción.
-
-## Pruebas y notebooks
-
-Instalar `requirements-dev.txt` para las pruebas. Ejecutar cada suite desde su carpeta para mantener las bibliotecas separadas:
+From `complementarios/02_rsa`:
 
 ```sh
-# Desde complementarios/01_modular_imatlab:
-python -m pytest tests
-# Desde complementarios/02_rsa:
-python -m pytest tests
+python registrarusuario.py
+python criptochat.py usuario1 usuario2
 ```
 
-Los cuatro notebooks se incluyen como cuadernos de exploración con sus celdas originales y sin salidas antiguas. Para ejecutarlos, instalar Jupyter, abrir cada notebook desde su propia carpeta y usar el entorno con las dependencias de ese bloque. Sus cálculos no se han certificado mediante una nueva ejecución completa. El estado del GPS, las pruebas y los notebooks se detalla en [VALIDACION.md](VALIDACION.md).
+Register two test users before opening the terminal application. This interface encrypts/decrypts locally; it does not send network messages. The practice includes key generation, decimal padding, string encryption and educational attacks. Original users' keys/messages are excluded. `python prueba.py` uses the provided `X.txt` exercise and writes an ignored local `X_descifrado.txt`. [Practice guide](complementarios/02_rsa/README.md).
+
+## Validation and known limits
+
+| Component | Checked locally | Remaining scope |
+|---|---|---|
+| GPS | Three original objective costs matched NetworkX on local data; nearest-node lookup and instructions ran. The README preview adds three checked routes. | All possible routes, speed realism and the interactive GUI are not certified. |
+| Graph algorithms | Dijkstra, Prim and Kruskal checked on a small graph; disconnected destinations and mixed-type node ties covered. | These cases are not a proof for every possible input. |
+| IMatLab/modular suite | **74 passed, 11 failed** in the selected submission version. | Three incomplete functions remain explicitly documented. |
+| RSA suite | **58 passed, 0 failed** in the existing tests. | Decimal padding and `random` are educational, not production cryptography. |
+| Four notebooks | Original cells retained; format checked and old outputs removed. | No complete fresh execution of each notebook. |
+
+These suite counts come from the repository preparation checks, not newly executed tests during the README update. To rerun them, install `requirements-dev.txt` in the environment and run `python -m pytest tests` **separately from each practice's directory**, so their two `modular.py` files do not conflict.
+
+**Further reading:** [full validation notes](VALIDACION.md) · [provenance and portability changes](PROCEDENCIA.md) · [map/data attribution](gps/DATOS.md). Original reports and companion documentation remain in Spanish.
