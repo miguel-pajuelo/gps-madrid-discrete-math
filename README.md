@@ -28,22 +28,7 @@ Academic project by **Miguel Pajuelo Gómez and Jorge Ois de Pascual** for *Mate
 
 ## How the route planner works
 
-```mermaid
-flowchart LR
-    INPUT["Origin + destination text"] --> MATCH["Fuzzy address matching"]
-    CSV["Local address CSV"] --> MATCH
-    MATCH --> COORD["Selected coordinates"]
-    COORD --> NODES["Nearest road nodes"]
-    MAP["Local OpenStreetMap GraphML"] --> GRAPH["Directed weighted graph"]
-    GRAPH --> NODES
-    NODES --> DIJKSTRA["Dijkstra + path reconstruction"]
-    OBJECTIVE["Distance / time / time + penalty"] --> DIJKSTRA
-    DIJKSTRA --> OUTPUT["Turn instructions + route map"]
-    classDef algorithm fill:#dbeafe,stroke:#2563eb,color:#0f172a;
-    classDef data fill:#dcfce7,stroke:#16a34a,color:#0f172a;
-    class MATCH,NODES,GRAPH,DIJKSTRA algorithm;
-    class CSV,MAP,OUTPUT data;
-```
+![Address lookup, road graph, Dijkstra and route output](.codex/visuals/architecture.png)
 
 The included dataset contains **213,811 address records**; the stored road graph has **31,388 nodes and 61,742 edges**, as recorded in [VALIDACION.md](VALIDACION.md). These are dataset sizes, not performance claims. The normal load uses local files, so it does not need to download Madrid again.
 
